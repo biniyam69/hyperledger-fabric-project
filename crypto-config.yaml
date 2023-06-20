@@ -1,28 +1,32 @@
 OrdererOrgs:
-- Name: OrdererOrg
-  Domain: orderer-org
-  CommonName: orderer-org
-  Specs:
-  - Hostname: orderer0
-    CommonName: "{{.Hostname}}"
+  - Name: OrdererOrg
+    Domain: orderer-org
+    CommonName: orderer-org
+    Specs:
+      - Hostname: orderer0
+        CommonName: "{{.Hostname}}"
+
 PeerOrgs:
-- Name: InsuranceOrg
-  Domain: insurance-org
-  Specs:
-  - Hostname: insurance-peer
-    CommonName: "{{.Hostname}}"
-- Name: ShopOrg
-  Domain: shop-org
-  Specs:
-  - Hostname: shop-peer
-    CommonName: "{{.Hostname}}"
-- Name: RepairShopOrg
-  Domain: repairshop-org
-  Specs:
-  - Hostname: repairshop-peer
-    CommonName: "{{.Hostname}}"
-- Name: PoliceOrg
-  Domain: police-org
-  Specs:
-  - Hostname: police-peer
-    CommonName: "{{.Hostname}}"
+  - Name: CourtOrg
+    Domain: court-org
+    Specs:
+      - Hostname: court-peer
+        CommonName: "{{.Hostname}}"
+
+  - Name: PrisonOrg
+    Domain: prison-org
+    Specs:
+      - Hostname: prison-peer
+        CommonName: "{{.Hostname}}"
+
+  - Name: InvestigationOrg
+    Domain: investigation-org
+    Specs:
+      - Hostname: investigation-peer
+        CommonName: "{{.Hostname}}"
+
+  - Name: LawEnforcementOrg
+    Domain: law-enforcement-org
+    Specs:
+      - Hostname: law-enforcement-peer
+        CommonName: "{{.Hostname}}"
