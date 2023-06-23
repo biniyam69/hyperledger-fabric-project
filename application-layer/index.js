@@ -11,14 +11,13 @@ app.use(express.json())
 
 const saltFactor = 12; // Higher salt factor for increased security
 
-// Register a new user
 app.post('/register', async (req, res) => {
   try {
     // Get the user data from the request body
     const { username, password, role } = req.body;
 
     // Check if the username is already taken
-    const existingUser = await collection.findOne({ username });
+    const existingUser = await client.db(admin).collection(collectionName).findOne({ username });
     if (existingUser) {
       return res.status(400).send('Username already exists');
     }
@@ -34,7 +33,7 @@ app.post('/register', async (req, res) => {
     };
 
     // Insert the user document into the collection
-    await collection.insertOne(user);
+    await client.db(dbName).collection(collectionName).insertOne(user);
 
     res.status(201).send('User registered successfully');
   } catch (error) {
@@ -42,6 +41,7 @@ app.post('/register', async (req, res) => {
     res.status(500).send('An error occurred: ' + error.message);
   }
 });
+
 
 
 // Start the server
