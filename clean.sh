@@ -1,23 +1,17 @@
 #!/bin/bash
 
-# Remove Docker containers
 docker rm -f $(docker ps -aq)
-
-# Remove Docker images
-images=(orderer0 law-enforcement-peer court-peer investigation-peer prison-peer law-enforcement-ca shop-ca repairshop-ca)
-for image in "${images[@]}"
+images=( web law-enforcement-peer court-peer investigation-peer prison-peer law-enforcement-ca court-ca prison-ca investigation-ca )
+for i in "${images[@]}"
 do
-	echo "Removing image: $image"
-	docker rmi -f $image
+	echo Removing image : $i
+  docker rmi -f $i
 done
 
-# Remove specific Docker images
-specific_images=(dev-law-enforcement-peer dev-court-peer dev-investigation-peer dev-prison-peer)
-for specific_image in "${specific_images[@]}"
+#docker rmi -f $(docker images | grep none)
+images=( dev-investigation-peer dev-lawenforcement-peer dev-court-peer dev-prison-peer)
+for i in "${images[@]}"
 do
-	echo "Removing image: $specific_image"
-	docker rmi -f $(docker images | grep $specific_image)
+	echo Removing image : $i
+  docker rmi -f $(docker images | grep $i )
 done
-
-# Remove unused Docker images
-docker rmi -f $(docker images | grep none)

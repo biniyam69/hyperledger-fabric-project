@@ -19,24 +19,25 @@ cp $CLIPATH/channel.tx $PROJPATH/web
 
 echo
 echo "#################################################################"
-echo "####### Generating anchor peer update for LawEnforcementOrg ##########"
-echo "#################################################################"
-$PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/LawEnforcementOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg LawEnforcementOrgMSP
-
-echo
-echo "#################################################################"
-echo "#######    Generating anchor peer update for CourtOrg   ##########"
+echo "####### Generating anchor peer update for CourtOrg ##########"
 echo "#################################################################"
 $PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/CourtOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg CourtOrgMSP
 
 echo
-echo "##################################################################"
-echo "####### Generating anchor peer update for InvestigationAgencyOrg ##########"
-echo "##################################################################"
-$PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/InvestigationAgencyOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg InvestigationAgencyOrgMSP
+echo "#################################################################"
+echo "#######    Generating anchor peer update for PrisonOrg   ##########"
+echo "#################################################################"
+$PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/PrisonOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg PrisonOrgMSP
 
 echo
 echo "##################################################################"
-echo "#######   Generating anchor peer update for PrisonOrg   ##########"
+echo "####### Generating anchor peer update for InvestigationOrg ##########"
 echo "##################################################################"
-$PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/PrisonOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg PrisonOrgMSP
+$PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/InvestigationOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg InvestigationOrgMSP
+
+echo
+echo "##################################################################"
+echo "#######   Generating anchor peer update for LawEnforcementOrg   ##########"
+echo "##################################################################"
+$PROJPATH/configtxgen -profile FourOrgsChannel -outputAnchorPeersUpdate $CLIPATH/LawEnforcementOrgMSPAnchors.tx -channelID $CHANNEL_NAME -asOrg LawEnforcementOrgMSP
+

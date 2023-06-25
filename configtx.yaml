@@ -1,42 +1,4 @@
 ---
-Organizations:
-  - &OrdererOrg
-    Name: OrdererOrg
-    ID: OrdererMSP
-    MSPDir: cli/peers/ordererOrganizations/orderer-org/msp
-
-  - &CourtOrg
-    Name: CourtOrg
-    ID: CourtOrgMSP
-    MSPDir: cli/peers/peerOrganizations/court-org/msp
-    AnchorPeers:
-      - Host: court-peer
-        Port: 7051
-
-  - &PrisonOrg
-    Name: PrisonOrg
-    ID: PrisonOrgMSP
-    MSPDir: cli/peers/peerOrganizations/prison-org/msp
-    AnchorPeers:
-      - Host: prison-peer
-        Port: 7051
-
-  - &InvestigationOrg
-    Name: InvestigationOrg
-    ID: InvestigationOrgMSP
-    MSPDir: cli/peers/peerOrganizations/investigation-org/msp
-    AnchorPeers:
-      - Host: investigation-peer
-        Port: 7051
-
-  - &LawEnforcementOrg
-    Name: LawEnforcementOrg
-    ID: LawEnforcementOrgMSP
-    MSPDir: cli/peers/peerOrganizations/law-enforcement-org/msp
-    AnchorPeers:
-      - Host: law-enforcement-peer
-        Port: 7051
-
 Orderer: &OrdererDefaults
   OrdererType: solo
   Addresses:
@@ -47,21 +9,54 @@ Orderer: &OrdererDefaults
     AbsoluteMaxBytes: 99 MB
     PreferredMaxBytes: 512 KB
   Organizations:
-    - *OrdererOrg
 
 Application: &ApplicationDefaults
   Organizations:
-    - *CourtOrg
-    - *PrisonOrg
-    - *InvestigationOrg
-    - *LawEnforcementOrg
+
+Organizations:
+- &OrdererOrg
+  Name: OrdererOrg
+  ID: OrdererMSP
+  MSPDir: cli/peers/ordererOrganizations/orderer-org/msp
+
+- &CourtOrg
+  Name: CourtOrgMSP
+  ID: CourtOrgMSP
+  MSPDir: cli/peers/peerOrganizations/court-org/msp
+  AnchorPeers:
+    - Host: court-peer
+      Port: 7051
+
+- &PrisonOrg
+  Name: PrisonOrgMSP
+  ID: PrisonOrgMSP
+  MSPDir: cli/peers/peerOrganizations/prison-org/msp
+  AnchorPeers:
+    - Host: prison-peer
+      Port: 7051
+
+- &InvestigationOrg
+  Name: InvestigationOrgMSP
+  ID: InvestigationOrgMSP
+  MSPDir: cli/peers/peerOrganizations/investigation-org/msp
+  AnchorPeers:
+    - Host: investigation-peer
+      Port: 7051
+
+- &LawEnforcementOrg
+  Name: LawEnforcementOrgMSP
+  ID: LawEnforcementOrgMSP
+  MSPDir: cli/peers/peerOrganizations/law-enforcement-org/msp
+  AnchorPeers:
+    - Host: law-enforcement-peer
+      Port: 7051
 
 Profiles:
   FourOrgsGenesis:
     Orderer:
       <<: *OrdererDefaults
       Organizations:
-        - *OrdererOrg
+      - *OrdererOrg
     Consortiums:
       CriminalRecordConsortium:
         Organizations:
@@ -75,7 +70,7 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - *CourtOrg
-        - *PrisonOrg
-        - *InvestigationOrg
-        - *LawEnforcementOrg
+      - *CourtOrg
+      - *PrisonOrg
+      - *InvestigationOrg
+      - *LawEnforcementOrg
