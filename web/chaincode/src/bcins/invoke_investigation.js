@@ -1,130 +1,79 @@
-package main
+'use strict';
 
-import (
-	"encoding/json"
+const { Contract } = require('fabric-contract-api');
 
-	"github.com/hyperledger/fabric-chaincode-go/shim"
+class InvestigatorContract extends Contract {
+  async createInvestigation(ctx, id, caseNumber, description) {
+    const investigationExists = await this.investigationExists(ctx, id);
+    if (investigationExists) {
+      throw new Error(`Investigation ${id} already exists`);
+    }
 
-	pb "github.com/hyperledger/fabric-protos-go/peer"
-)
+    const investigation = {
+      id,
+      caseNumber,
+      description,
+      status: 'Open',
+      evidence: [],
+      investigators: [],
+    };
 
-func listRepairOrders(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	resultsIterator, err := stub.GetStateByPartialCompositeKey(prefixRepairOrder, []string{})
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	defer resultsIterator.Close()
+    await ctx.stub.putState(id, Buffer.from(JSON.stringify(investigation)));
+    return 'Investigation created successfully';
+  }
 
-	results := []interface{}{}
-	for resultsIterator.HasNext() {
-		kvResult, err := resultsIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
+  async getInvestigation(ctx, id) {
+    const investigationAsBytes = await ctx.stub.getState(id);
+    if (!investigationAsBytes || investigationAsBytes.length === 0) {
+      throw new Error(`Investigation ${id} does not exist`);
+    }
 
-		repairOrder := repairOrder{}
-		err = json.Unmarshal(kvResult.Value, &repairOrder)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		if repairOrder.Ready {
-			continue
-		}
+    return investigationAsBytes.toString();
+  }
 
-		result := struct {
-			UUID         string `json:"uuid"`
-			ClaimUUID    string `json:"claim_uuid"`
-			ContractUUID string `json:"contract_uuid"`
-			Item         item   `json:"item"`
-		}{}
-		err = json.Unmarshal(kvResult.Value, &result)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		prefix, keyParts, err := stub.SplitCompositeKey(kvResult.Key)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		if len(keyParts) == 0 {
-			result.UUID = prefix
-		} else {
-			result.UUID = keyParts[0]
-		}
-		results = append(results, result)
-	}
+  async addEvidence(ctx, id, evidence) {
+    const investigationAsBytes = await ctx.stub.getState(id);
+    if (!investigationAsBytes || investigationAsBytes.length === 0) {
+      throw new Error(`Investigation ${id} does not exist`);
+    }
 
-	resultsAsBytes, err := json.Marshal(results)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	return shim.Success(resultsAsBytes)
+    const investigation = JSON.parse(investigationAsBytes.toString());
+    investigation.evidence.push(evidence);
+
+    await ctx.stub.putState(id, Buffer.from(JSON.stringify(investigation)));
+    return 'Evidence added to investigation successfully';
+  }
+
+  async assignInvestigator(ctx, id, investigator) {
+    const investigationAsBytes = await ctx.stub.getState(id);
+    if (!investigationAsBytes || investigationAsBytes.length === 0) {
+      throw new Error(`Investigation ${id} does not exist`);
+    }
+
+    const investigation = JSON.parse(investigationAsBytes.toString());
+    investigation.investigators.push(investigator);
+
+    await ctx.stub.putState(id, Buffer.from(JSON.stringify(investigation)));
+    return 'Investigator assigned to investigation successfully';
+  }
+
+  async changeInvestigationStatus(ctx, id, status) {
+    const investigationAsBytes = await ctx.stub.getState(id);
+    if (!investigationAsBytes || investigationAsBytes.length === 0) {
+      throw new Error(`Investigation ${id} does not exist`);
+    }
+
+    const investigation = JSON.parse(investigationAsBytes.toString());
+    investigation.status = status;
+
+    await ctx.stub.putState(id, Buffer.from(JSON.stringify(investigation)));
+    return 'Investigation status changed successfully';
+  }
+
+  async investigationExists(ctx, id) {
+    const investigationAsBytes = await ctx.stub.getState(id);
+    return investigationAsBytes && investigationAsBytes.length > 0;
+  }
 }
 
-func completeRepairOrder(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 1 {
-		return shim.Error("Invalid argument count.")
-	}
-
-	input := struct {
-		UUID string `json:"uuid"`
-	}{}
-	err := json.Unmarshal([]byte(args[0]), &input)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	repairOrderKey, err := stub.CreateCompositeKey(prefixRepairOrder, []string{input.UUID})
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	repairOrderBytes, _ := stub.GetState(repairOrderKey)
-	if len(repairOrderBytes) == 0 {
-		return shim.Error("Could not find the repair order")
-	}
-
-	repairOrder := repairOrder{}
-	err = json.Unmarshal(repairOrderBytes, &repairOrder)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// Marking repair order as ready
-	repairOrder.Ready = true
-
-	repairOrderBytes, err = json.Marshal(repairOrder)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	err = stub.PutState(repairOrderKey, repairOrderBytes)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// Reflect changes in the corresponding claim
-	claimKey, err := stub.CreateCompositeKey(prefixClaim, []string{repairOrder.ContractUUID, repairOrder.ClaimUUID})
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	claimBytes, _ := stub.GetState(claimKey)
-	if claimBytes != nil {
-		claim := Claim{}
-		err := json.Unmarshal(claimBytes, &claim)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-
-		claim.Repaired = true
-		claimBytes, err = json.Marshal(claim)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-
-		err = stub.PutState(claimKey, claimBytes)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-	}
-
-	return shim.Success(nil)
-}
+module.exports = InvestigatorContract;

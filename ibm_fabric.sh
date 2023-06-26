@@ -15,99 +15,98 @@ $PROJPATH/cryptogen generate --config=$PROJPATH/crypto-config.yaml --output=$CLI
 
 sh generate-cfgtx.sh
 
-# rm -rf $PROJPATH/{orderer,insurancePeer,policePeer,repairShopPeer,shopPeer}/crypto
+# Remove existing crypto directories
 rm -rf $PROJPATH/orderer/crypto
-rm -rf $PROJPATH/insurancePeer/crypto
-rm -rf $PROJPATH/policePeer/crypto
-rm -rf $PROJPATH/repairShopPeer/crypto
-rm -rf $PROJPATH/shopPeer/crypto
-# mkdir $PROJPATH/{orderer,insurancePeer,policePeer,repairShopPeer,shopPeer}/crypto
+rm -rf $PROJPATH/courtPeer/crypto
+rm -rf $PROJPATH/prisonPeer/crypto
+rm -rf $PROJPATH/lawEnforcementPeer/crypto
+rm -rf $PROJPATH/investigationPeer/crypto
+
+# Create new crypto directories
 mkdir $PROJPATH/orderer/crypto
-mkdir $PROJPATH/insurancePeer/crypto
-mkdir $PROJPATH/policePeer/crypto
-mkdir $PROJPATH/repairShopPeer/crypto
-mkdir $PROJPATH/shopPeer/crypto
-# cp -r $ORDERERS/orderer-org/orderers/orderer0/{msp,tls} $PROJPATH/orderer/crypto
+mkdir $PROJPATH/courtPeer/crypto
+mkdir $PROJPATH/prisonPeer/crypto
+mkdir $PROJPATH/lawEnforcementPeer/crypto
+mkdir $PROJPATH/investigationPeer/crypto
+
+# Copy crypto files
 cp -r $ORDERERS/orderer-org/orderers/orderer0/msp $PROJPATH/orderer/crypto
 cp -r $ORDERERS/orderer-org/orderers/orderer0/tls $PROJPATH/orderer/crypto
-# cp -r $PEERS/insurance-org/peers/insurance-peer/{msp,tls} $PROJPATH/insurancePeer/crypto
-cp -r $PEERS/insurance-org/peers/insurance-peer/msp $PROJPATH/insurancePeer/crypto
-cp -r $PEERS/insurance-org/peers/insurance-peer/tls $PROJPATH/insurancePeer/crypto
-# cp -r $PEERS/police-org/peers/police-peer/{msp,tls} $PROJPATH/policePeer/crypto
-cp -r $PEERS/police-org/peers/police-peer/msp $PROJPATH/policePeer/crypto
-cp -r $PEERS/police-org/peers/police-peer/tls $PROJPATH/policePeer/crypto
-# cp -r $PEERS/repairshop-org/peers/repairshop-peer/{msp,tls} $PROJPATH/repairShopPeer/crypto
-cp -r $PEERS/repairshop-org/peers/repairshop-peer/msp $PROJPATH/repairShopPeer/crypto
-cp -r $PEERS/repairshop-org/peers/repairshop-peer/tls $PROJPATH/repairShopPeer/crypto
-# cp -r $PEERS/shop-org/peers/shop-peer/{msp,tls} $PROJPATH/shopPeer/crypto
-cp -r $PEERS/shop-org/peers/shop-peer/msp $PROJPATH/shopPeer/crypto
-cp -r $PEERS/shop-org/peers/shop-peer/tls $PROJPATH/shopPeer/crypto
+cp -r $PEERS/court-org/peers/court-peer/msp $PROJPATH/courtPeer/crypto
+cp -r $PEERS/court-org/peers/court-peer/tls $PROJPATH/courtPeer/crypto
+cp -r $PEERS/prison-org/peers/prison-peer/msp $PROJPATH/prisonPeer/crypto
+cp -r $PEERS/prison-org/peers/prison-peer/tls $PROJPATH/prisonPeer/crypto
+cp -r $PEERS/law-enforcement-org/peers/law-enforcement-peer/msp $PROJPATH/lawEnforcementPeer/crypto
+cp -r $PEERS/law-enforcement-org/peers/law-enforcement-peer/tls $PROJPATH/lawEnforcementPeer/crypto
+cp -r $PEERS/investigation-org/peers/investigation-peer/msp $PROJPATH/investigationPeer/crypto
+cp -r $PEERS/investigation-org/peers/investigation-peer/tls $PROJPATH/investigationPeer/crypto
+
 cp $CLIPATH/genesis.block $PROJPATH/orderer/crypto/
 
-INSURANCECAPATH=$PROJPATH/insuranceCA
-POLICECAPATH=$PROJPATH/policeCA
-REPAIRSHOPCAPATH=$PROJPATH/repairShopCA
-SHOPCAPATH=$PROJPATH/shopCA
+COURTCAPATH=$PROJPATH/CourtCA
+INVESTIGATIONCAPATH=$PROJPATH/InvestigationCA
+LAWENFORCEMENTCAPATH=$PROJPATH/LawEnforcementCA
+PRISONCAPATH=$PROJPATH/PrisonCA
 
-# rm -rf {$INSURANCECAPATH,$POLICECAPATH,$REPAIRSHOPCAPATH,$SHOPCAPATH}/{ca,tls}
-rm -rf $INSURANCECAPATH/ca
-rm -rf $POLICECAPATH/ca
-rm -rf $REPAIRSHOPCAPATH/ca
-rm -rf $SHOPCAPATH/ca
-rm -rf $INSURANCECAPATH/tls
-rm -rf $POLICECAPATH/tls
-rm -rf $REPAIRSHOPCAPATH/tls
-rm -rf $SHOPCAPATH/tls
-# mkdir -p {$INSURANCECAPATH,$POLICECAPATH,$REPAIRSHOPCAPATH,$SHOPCAPATH}/{ca,tls}
-mkdir -p $INSURANCECAPATH/ca
-mkdir -p $POLICECAPATH/ca
-mkdir -p $REPAIRSHOPCAPATH/ca
-mkdir -p $SHOPCAPATH/ca
-mkdir -p $INSURANCECAPATH/tls
-mkdir -p $POLICECAPATH/tls
-mkdir -p $REPAIRSHOPCAPATH/tls
-mkdir -p $SHOPCAPATH/tls
-cp $PEERS/insurance-org/ca/* $INSURANCECAPATH/ca
-cp $PEERS/insurance-org/tlsca/* $INSURANCECAPATH/tls
-mv $INSURANCECAPATH/ca/*_sk $INSURANCECAPATH/ca/key.pem
-mv $INSURANCECAPATH/ca/*-cert.pem $INSURANCECAPATH/ca/cert.pem
-mv $INSURANCECAPATH/tls/*_sk $INSURANCECAPATH/tls/key.pem
-mv $INSURANCECAPATH/tls/*-cert.pem $INSURANCECAPATH/tls/cert.pem
+rm -rf $COURTCAPATH/ca
+rm -rf $INVESTIGATIONCAPATH/ca
+rm -rf $LAWENFORCEMENTCAPATH/ca
+rm -rf $PRISONCAPATH/ca
+rm -rf $COURTCAPATH/tls
+rm -rf $INVESTIGATIONCAPATH/tls
+rm -rf $LAWENFORCEMENTCAPATH/tls
+rm -rf $PRISONCAPATH/tls
 
-cp $PEERS/police-org/ca/* $POLICECAPATH/ca
-cp $PEERS/police-org/tlsca/* $POLICECAPATH/tls
-mv $POLICECAPATH/ca/*_sk $POLICECAPATH/ca/key.pem
-mv $POLICECAPATH/ca/*-cert.pem $POLICECAPATH/ca/cert.pem
-mv $POLICECAPATH/tls/*_sk $POLICECAPATH/tls/key.pem
-mv $POLICECAPATH/tls/*-cert.pem $POLICECAPATH/tls/cert.pem
+mkdir -p $COURTCAPATH/ca
+mkdir -p $INVESTIGATIONCAPATH/ca
+mkdir -p $LAWENFORCEMENTCAPATH/ca
+mkdir -p $PRISONCAPATH/ca
+mkdir -p $COURTCAPATH/tls
+mkdir -p $INVESTIGATIONCAPATH/tls
+mkdir -p $LAWENFORCEMENTCAPATH/tls
+mkdir -p $PRISONCAPATH/tls
 
-cp $PEERS/repairshop-org/ca/* $REPAIRSHOPCAPATH/ca
-cp $PEERS/repairshop-org/tlsca/* $REPAIRSHOPCAPATH/tls
-mv $REPAIRSHOPCAPATH/ca/*_sk $REPAIRSHOPCAPATH/ca/key.pem
-mv $REPAIRSHOPCAPATH/ca/*-cert.pem $REPAIRSHOPCAPATH/ca/cert.pem
-mv $REPAIRSHOPCAPATH/tls/*_sk $REPAIRSHOPCAPATH/tls/key.pem
-mv $REPAIRSHOPCAPATH/tls/*-cert.pem $REPAIRSHOPCAPATH/tls/cert.pem
+cp $PEERS/court-org/ca/* $COURTCAPATH/ca
+cp $PEERS/court-org/tlsca/* $COURTCAPATH/tls
+mv $COURTCAPATH/ca/*_sk $COURTCAPATH/ca/key.pem
+mv $COURTCAPATH/ca/*-cert.pem $COURTCAPATH/ca/cert.pem
+mv $COURTCAPATH/tls/*_sk $COURTCAPATH/tls/key.pem
+mv $COURTCAPATH/tls/*-cert.pem $COURTCAPATH/tls/cert.pem
 
-cp $PEERS/shop-org/ca/* $SHOPCAPATH/ca
-cp $PEERS/shop-org/tlsca/* $SHOPCAPATH/tls
-mv $SHOPCAPATH/ca/*_sk $SHOPCAPATH/ca/key.pem
-mv $SHOPCAPATH/ca/*-cert.pem $SHOPCAPATH/ca/cert.pem
-mv $SHOPCAPATH/tls/*_sk $SHOPCAPATH/tls/key.pem
-mv $SHOPCAPATH/tls/*-cert.pem $SHOPCAPATH/tls/cert.pem
+cp $PEERS/investigation-org/ca/* $INVESTIGATIONCAPATH/ca
+cp $PEERS/investigation-org/tlsca/* $INVESTIGATIONCAPATH/tls
+mv $INVESTIGATIONCAPATH/ca/*_sk $INVESTIGATIONCAPATH/ca/key.pem
+mv $INVESTIGATIONCAPATH/ca/*-cert.pem $INVESTIGATIONCAPATH/ca/cert.pem
+mv $INVESTIGATIONCAPATH/tls/*_sk $INVESTIGATIONCAPATH/tls/key.pem
+mv $INVESTIGATIONCAPATH/tls/*-cert.pem $INVESTIGATIONCAPATH/tls/cert.pem
+
+cp $PEERS/law-enforcement-org/ca/* $LAWENFORCEMENTCAPATH/ca
+cp $PEERS/law-enforcement-org/tlsca/* $LAWENFORCEMENTCAPATH/tls
+mv $LAWENFORCEMENTCAPATH/ca/*_sk $LAWENFORCEMENTCAPATH/ca/key.pem
+mv $LAWENFORCEMENTCAPATH/ca/*-cert.pem $LAWENFORCEMENTCAPATH/ca/cert.pem
+mv $LAWENFORCEMENTCAPATH/tls/*_sk $LAWENFORCEMENTCAPATH/tls/key.pem
+mv $LAWENFORCEMENTCAPATH/tls/*-cert.pem $LAWENFORCEMENTCAPATH/tls/cert.pem
+
+cp $PEERS/prison-org/ca/* $PRISONCAPATH/ca
+cp $PEERS/prison-org/tlsca/* $PRISONCAPATH/tls
+mv $PRISONCAPATH/ca/*_sk $PRISONCAPATH/ca/key.pem
+mv $PRISONCAPATH/ca/*-cert.pem $PRISONCAPATH/ca/cert.pem
+mv $PRISONCAPATH/tls/*_sk $PRISONCAPATH/tls/key.pem
+mv $PRISONCAPATH/tls/*-cert.pem $PRISONCAPATH/tls/cert.pem
 
 WEBCERTS=$PROJPATH/web/certs
 rm -rf $WEBCERTS
 mkdir -p $WEBCERTS
 cp $PROJPATH/orderer/crypto/tls/ca.crt $WEBCERTS/ordererOrg.pem
-cp $PROJPATH/insurancePeer/crypto/tls/ca.crt $WEBCERTS/insuranceOrg.pem
-cp $PROJPATH/policePeer/crypto/tls/ca.crt $WEBCERTS/policeOrg.pem
-cp $PROJPATH/repairShopPeer/crypto/tls/ca.crt $WEBCERTS/repairShopOrg.pem
-cp $PROJPATH/shopPeer/crypto/tls/ca.crt $WEBCERTS/shopOrg.pem
-cp $PEERS/insurance-org/users/Admin@insurance-org/msp/keystore/* $WEBCERTS/Admin@insurance-org-key.pem
-cp $PEERS/insurance-org/users/Admin@insurance-org/msp/signcerts/* $WEBCERTS/
-cp $PEERS/shop-org/users/Admin@shop-org/msp/keystore/* $WEBCERTS/Admin@shop-org-key.pem
-cp $PEERS/shop-org/users/Admin@shop-org/msp/signcerts/* $WEBCERTS/
-cp $PEERS/police-org/users/Admin@police-org/msp/keystore/* $WEBCERTS/Admin@police-org-key.pem
-cp $PEERS/police-org/users/Admin@police-org/msp/signcerts/* $WEBCERTS/
-cp $PEERS/repairshop-org/users/Admin@repairshop-org/msp/keystore/* $WEBCERTS/Admin@repairshop-org-key.pem
-cp $PEERS/repairshop-org/users/Admin@repairshop-org/msp/signcerts/* $WEBCERTS/
+cp $PROJPATH/lawEnforcementPeer/crypto/tls/ca.crt $WEBCERTS/lawEnforcementOrg.pem
+cp $PROJPATH/prisonPeer/crypto/tls/ca.crt $WEBCERTS/prisonOrg.pem
+cp $PROJPATH/courtPeer/crypto/tls/ca.crt $WEBCERTS/courtOrg.pem
+cp $PROJPATH/investigationPeer/crypto/tls/ca.crt $WEBCERTS/investigationOrg.pem
+cp $PEERS/law-enforcement-org/users/Admin@law-enforcement-org/msp/keystore/* $WEBCERTS/Admin@law-enforcement-org-key.pem
+cp $PEERS/law-enforcement-org/users/Admin@law-enforcement-org/msp/signcerts/* $WEBCERTS/
+cp $PEERS/prison-org/users/Admin@prison-org/msp/keystore/* $WEBCERTS/Admin@prison-org-key.pem
+cp $PEERS/prison-org/users/Admin@prison-org/msp/signcerts/* $WEBCERTS/
+cp $PEERS/court-org/users/Admin@court-org/msp/keystore/* $WEBCERTS/Admin@court-org-key.pem
+cp $PEERS/court-org/users/Admin@court-org/msp/signcerts/* $WEBCERTS/
+cp $PEERS/investigation-org/users/Admin@investigation-org/msp/keystore/* $WEBCERTS/Admin@investigation-org-key.pem
+cp $PEERS/investigation-org/users/Admin@investigation-org/msp/signcerts/* $WEBCERTS/
