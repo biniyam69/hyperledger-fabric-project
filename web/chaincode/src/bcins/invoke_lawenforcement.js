@@ -15,6 +15,7 @@ class CriminalRecord {
 }
 
 class LawEnforcementContract extends Contract {
+  
   async registerCriminalRecord(ctx, recordID, firstName, lastName, dateOfBirth, nationality) {
     const record = new CriminalRecord(recordID, firstName, lastName, dateOfBirth, nationality);
     await ctx.stub.putState(recordID, Buffer.from(JSON.stringify(record)));

@@ -1,190 +1,134 @@
+'use strict';
+
 const { Contract } = require('fabric-contract-api');
 
+class CriminalRecord {
+    constructor(obj) {
+        Object.assign(this, obj);
+    }
+}
+
 class CriminalRecordContract extends Contract {
+
   async initLedger(ctx) {
+    console.info('============= START : Initialize Ledger ===========');
+    
     const records = [
-      {
-        recordId: '1',
-        firstName: 'John',
-        lastName: 'Doe',
-        offenses: ['Theft', 'Assault'],
-        convictions: ['Theft'],
-        acquittals: [],
-        investigations: [],
-      },
-      {
-        recordId: '2',
-        firstName: 'Jane',
-        lastName: 'Smith',
-        offenses: ['Fraud'],
-        convictions: ['Fraud'],
-        acquittals: [],
-        investigations: [],
-      },
+        {
+            id: 'record1',
+            firstName: 'Abebe',
+            lastName: 'Kebede',
+            offenses: [],
+            convictions: [],
+            acquittals: [],
+            investigations: []
+        },
+        {
+            id: 'Travis',
+            firstName: 'Scott',
+            lastName: 'Doe',
+            offenses: [],
+            convictions: [],
+            acquittals: [],
+            investigations: []
+        },
+        // Add more records as needed
     ];
 
-    for (const record of records) {
-      await ctx.stub.putState(record.recordId, Buffer.from(JSON.stringify(record)));
-      console.log(`Record ${record.recordId} initialized.`);
+    for (let i = 0; i < records.length; i++) {
+        records[i].docType = 'record';
+        await ctx.stub.putState(records[i].id, Buffer.from(JSON.stringify(records[i])));
+        console.info('Added <--> ', records[i]);
     }
 
-    console.log('Ledger initialized with sample data.');
-  }
+    console.info('============= END : Initialize Ledger ===========');
+}
 
 
-  async createRecord(ctx, args) {
-    const [recordID, firstName, lastName, dateOfBirth, nationality] = args;
-
-    // Check if the record already exists
-    const existingRecord = await ctx.stub.getState(recordID);
-    if (existingRecord && existingRecord.length > 0) {
-      throw new Error(`Record with ID ${recordID} already exists`);
+    async createRecord(ctx, recordId, record) {
+        console.info('============= START : Create Record ===========');
+        const data = new CriminalRecord(JSON.parse(record));
+        await ctx.stub.putState(recordId, Buffer.from(JSON.stringify(data)));
+        console.info('============= END : Create Record ===========');
     }
 
-    // Create a new criminal record object
-    const record = {
-      recordID,
-      firstName,
-      lastName,
-      dateOfBirth,
-      nationality,
-      offences: [],
-      convictions: [],
-      acquittals: []
-    };
-
-    // Store the record on the ledger
-    await ctx.stub.putState(recordID, Buffer.from(JSON.stringify(record)));
-
-    // Return a success message or any relevant response
-    return 'Criminal record created successfully';
-  }
-
-  async getRecord(ctx, args) {
-    const [recordID] = args;
-
-    // Retrieve the record from the ledger
-    const recordJSON = await ctx.stub.getState(recordID);
-    if (!recordJSON || recordJSON.length === 0) {
-      throw new Error(`Record with ID ${recordID} does not exist`);
+    async getRecord(ctx, recordId) {
+        console.info('============= START : Get Record ===========');
+        const recordAsBytes = await ctx.stub.getState(recordId); 
+        if (!recordAsBytes || recordAsBytes.length === 0) {
+            throw new Error(`${recordId} does not exist`);
+        }
+        console.info('============= END : Get Record ===========');
+        return recordAsBytes.toString();
     }
 
-    // Return the record JSON as a string
-    return recordJSON.toString();
-  }
-
-  async updateRecord(ctx, args) {
-    const [recordID, offences, convictions, acquittals] = args;
-
-    // Retrieve the record from the ledger
-    const recordJSON = await ctx.stub.getState(recordID);
-    if (!recordJSON || recordJSON.length === 0) {
-      throw new Error(`Record with ID ${recordID} does not exist`);
+    async updateRecord(ctx, recordId, newRecord) {
+        console.info('============= START : Update Record ===========');
+        const record = new CriminalRecord(JSON.parse(newRecord));
+        await ctx.stub.putState(recordId, Buffer.from(JSON.stringify(record)));
+        console.info('============= END : Update Record ===========');
     }
 
-    // Parse the record JSON and update the fields
-    const record = JSON.parse(recordJSON.toString());
-    record.offences.push(...offences);
-    record.convictions.push(...convictions);
-    record.acquittals.push(...acquittals);
-
-    // Store the updated record on the ledger
-    await ctx.stub.putState(recordID, Buffer.from(JSON.stringify(record)));
-
-    // Return a success message or any relevant response
-    return 'Criminal record updated successfully';
-  }
-
-  async deleteRecord(ctx, args) {
-    const [recordID] = args;
-
-    // Check if the record exists
-    const existingRecord = await ctx.stub.getState(recordID);
-    if (!existingRecord || existingRecord.length === 0) {
-      throw new Error(`Record with ID ${recordID} does not exist`);
+    async deleteRecord(ctx, recordId) {
+        console.info('============= START : Delete Record ===========');
+        await ctx.stub.deleteState(recordId);
+        console.info('============= END : Delete Record ===========');
     }
 
-    // Delete the record from the ledger
-    await ctx.stub.deleteState(recordID);
+    async addOffense(ctx, recordId, offense) {
+        console.info('============= START : Add Offense ===========');
+        const recordAsBytes = await ctx.stub.getState(recordId); 
+        if (!recordAsBytes || recordAsBytes.length === 0) {
+            throw new Error(`${recordId} does not exist`);
+        }
+        const record = JSON.parse(recordAsBytes.toString());
+        record.offenses.push(offense);
+        await ctx.stub.putState(recordId, Buffer.from(JSON.stringify(record)));
+        console.info('============= END : Add Offense ===========');
+    }
 
-    // Return a success message or any relevant response
-    return 'Criminal record deleted successfully';
-  }
-
-  async searchRecords(ctx, args) {
-    const [criteria] = args;
-
-    // Define the query string based on the search criteria
-    const queryString = `{
-      "selector": {
-        "$or": [
-          { "firstName": { "$regex": "${criteria}", "$options": "i" } },
-          { "lastName": { "$regex": "${criteria}", "$options": "i" } }
-        ]
+    async addConviction(ctx, recordId, conviction) {
+      console.info('============= START : Add Conviction ===========');
+      
+      const recordAsBytes = await ctx.stub.getState(recordId); 
+      if (!recordAsBytes || recordAsBytes.length === 0) {
+          throw new Error(`${recordId} does not exist`);
       }
-    }`;
-
-    // Perform the query on the ledger
-    const searchResults = await ctx.stub.getQueryResult(queryString);
-
-    // Convert the search results to an array of objects
-    const records = [];
-    while (true) {
-      const record = await searchResults.next();
-      if (record.done) {
-        break;
+      const record = JSON.parse(recordAsBytes.toString());
+      record.convictions.push(conviction);
+      await ctx.stub.putState(recordId, Buffer.from(JSON.stringify(record)));
+  
+      console.info('============= END : Add Conviction ===========');
+  }
+  
+  async addAcquittal(ctx, recordId, acquittal) {
+      console.info('============= START : Add Acquittal ===========');
+      
+      const recordAsBytes = await ctx.stub.getState(recordId); 
+      if (!recordAsBytes || recordAsBytes.length === 0) {
+          throw new Error(`${recordId} does not exist`);
       }
-      records.push(JSON.parse(record.value.value.toString('utf8')));
-    }
-
-    // Return the search results as JSON
-    return JSON.stringify(records);
+      const record = JSON.parse(recordAsBytes.toString());
+      record.acquittals.push(acquittal);
+      await ctx.stub.putState(recordId, Buffer.from(JSON.stringify(record)));
+  
+      console.info('============= END : Add Acquittal ===========');
   }
-
-  async addOffense(ctx, args) {
-    // Implementation for adding a new offense to a criminal record
+  
+  async addInvestigation(ctx, recordId, investigation) {
+      console.info('============= START : Add Investigation ===========');
+      
+      const recordAsBytes = await ctx.stub.getState(recordId); 
+      if (!recordAsBytes || recordAsBytes.length === 0) {
+          throw new Error(`${recordId} does not exist`);
+      }
+      const record = JSON.parse(recordAsBytes.toString());
+      record.investigations.push(investigation);
+      await ctx.stub.putState(recordId, Buffer.from(JSON.stringify(record)));
+  
+      console.info('============= END : Add Investigation ===========');
   }
-
-  async addConviction(ctx, args) {
-    // Implementation for adding a new conviction to a criminal record
-  }
-
-  async addAcquittal(ctx, args) {
-    // Implementation for adding a new acquittal to a criminal record
-  }
-
-  async addInvestigation(ctx, args) {
-    // Implementation for adding a new investigation to a criminal record
-  }
-
-  async shareRecordWithRecipient(ctx, args) {
-    // Implementation for sharing a criminal record with a recipient
-  }
-
-  async requestAccessToRecord(ctx, args) {
-    // Implementation for requesting access to a criminal record
-  }
-
-  async approveAccessRequest(ctx, args) {
-    // Implementation for approving an access request to a criminal record
-  }
-
-  async rejectAccessRequest(ctx, args) {
-    // Implementation for rejecting an access request to a criminal record
-  }
-
-  async auditRecordAccess(ctx, args) {
-    // Implementation for auditing access to a criminal record
-  }
-
-  async getRecordHistory(ctx, args) {
-    // Implementation for retrieving the history of changes for a criminal record
-  }
-
-  async getRecordStatistics(ctx, args) {
-    // Implementation for retrieving statistics and analytics for criminal records
-  }
+  
 }
 
 module.exports = CriminalRecordContract;
-

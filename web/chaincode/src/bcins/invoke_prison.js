@@ -1,87 +1,69 @@
 'use strict';
 
 const { Contract } = require('fabric-contract-api');
-const moment = require('moment');
 
-// Contract represents the prison contract for managing prisoners
+class Prisoner {
+    constructor(obj) {
+        Object.assign(this, obj);
+    }
+}
+
 class PrisonContract extends Contract {
-  async createContract(ctx, contractData) {
-    const {
-      uuid,
-      contractTypeUUID,
-      username,
-      password,
-      firstName,
-      lastName,
-      item,
-      startDate,
-      endDate,
-    } = JSON.parse(contractData);
 
-    if (!uuid || !contractTypeUUID || !username || !password || !firstName || !lastName || !item || !startDate || !endDate) {
-      throw new Error('Invalid contract data');
+    async createPrisoner(ctx, prisonerId, prisoner) {
+        console.info('============= START : Create Prisoner ===========');
+        const data = new Prisoner(JSON.parse(prisoner));
+        await ctx.stub.putState(prisonerId, Buffer.from(JSON.stringify(data)));
+        console.info('============= END : Create Prisoner ===========');
     }
 
-    const userKey = ctx.stub.createCompositeKey('USER', [username]);
-    const userExists = await ctx.stub.getState(userKey);
-    let user;
-
-    if (!userExists) {
-      user = {
-        username,
-        password,
-        firstName,
-        lastName,
-      };
-      await ctx.stub.putState(userKey, Buffer.from(JSON.stringify(user)));
-    } else {
-      user = JSON.parse(userExists.toString('utf8'));
+    async getPrisoner(ctx, prisonerId) {
+        console.info('============= START : Get Prisoner ===========');
+        const prisonerAsBytes = await ctx.stub.getState(prisonerId); 
+        if (!prisonerAsBytes || prisonerAsBytes.length === 0) {
+            throw new Error(`${prisonerId} does not exist`);
+        }
+        console.info('============= END : Get Prisoner ===========');
+        return prisonerAsBytes.toString();
     }
 
-    const contract = {
-      username,
-      contractTypeUUID,
-      item,
-      startDate: moment(startDate).toISOString(),
-      endDate: moment(endDate).toISOString(),
-      void: false,
-      claimIndex: [],
-    };
-
-    const contractKey = ctx.stub.createCompositeKey('CONTRACT', [username, uuid]);
-    await ctx.stub.putState(contractKey, Buffer.from(JSON.stringify(contract)));
-
-    if (!userExists) {
-      return {
-        username: user.username,
-        password: user.password,
-      };
+    async updatePrisoner(ctx, prisonerId, newPrisoner) {
+        console.info('============= START : Update Prisoner ===========');
+        const prisoner = new Prisoner(JSON.parse(newPrisoner));
+        await ctx.stub.putState(prisonerId, Buffer.from(JSON.stringify(prisoner)));
+        console.info('============= END : Update Prisoner ===========');
     }
 
-    return null;
+    async deletePrisoner(ctx, prisonerId) {
+        console.info('============= START : Delete Prisoner ===========');
+        await ctx.stub.deleteState(prisonerId);
+        console.info('============= END : Delete Prisoner ===========');
+    }
+
+    async addSentence(ctx, prisonerId, sentence) {
+      console.info('============= START : Add Sentence ===========');
+      const prisonerAsBytes = await ctx.stub.getState(prisonerId); 
+      if (!prisonerAsBytes || prisonerAsBytes.length === 0) {
+          throw new Error(`${prisonerId} does not exist`);
+      }
+      const prisoner = JSON.parse(prisonerAsBytes.toString());
+      prisoner.sentences.push(sentence);
+      await ctx.stub.putState(prisonerId, Buffer.from(JSON.stringify(prisoner)));
+      console.info('============= END : Add Sentence ===========');
   }
 
-  async createUser(ctx, userData) {
-    const user = JSON.parse(userData);
-    if (!user.username || !user.password) {
-      throw new Error('Invalid user data');
-    }
-
-    const userKey = ctx.stub.createCompositeKey('USER', [user.username]);
-    const userExists = await ctx.stub.getState(userKey);
-
-    if (userExists && userExists.length > 0) {
-      const existingUser = JSON.parse(userExists.toString('utf8'));
-      return {
-        username: existingUser.username,
-        password: existingUser.password,
-      };
-    }
-
-    await ctx.stub.putState(userKey, Buffer.from(JSON.stringify(user)));
-
-    return null;
+  async releasePrisoner(ctx, prisonerId) {
+      console.info('============= START : Release Prisoner ===========');
+      const prisonerAsBytes = await ctx.stub.getState(prisonerId); 
+      if (!prisonerAsBytes || prisonerAsBytes.length === 0) {
+          throw new Error(`${prisonerId} does not exist`);
+      }
+      const prisoner = JSON.parse(prisonerAsBytes.toString());
+      prisoner.status = 'Released';
+      await ctx.stub.putState(prisonerId, Buffer.from(JSON.stringify(prisoner)));
+      console.info('============= END : Release Prisoner ===========');
   }
+
 }
 
 module.exports = PrisonContract;
