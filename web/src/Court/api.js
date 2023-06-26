@@ -1,9 +1,7 @@
-'use strict';
-
 import fetch from 'isomorphic-fetch';
 
 export function getClaims(status) {
-  return fetch('/insurance/api/claims', {
+  return fetch('/court/api/claims', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
@@ -15,20 +13,20 @@ export function getClaims(status) {
   });
 }
 
-export function processClaim(contractUuid, uuid, status, reimbursable) {
-  return fetch('/insurance/api/process-claim', {
+export function processClaim(caseNumber, caseDetails) {
+  return fetch('/court/api/process-claim', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
-    body: JSON.stringify({ contractUuid, uuid, status, reimbursable })
+    body: JSON.stringify({ caseNumber, caseDetails })
   }).then(async res => {
     return await res.json();
   });
 }
 
-export function getContractTypes() {
-  return fetch('/insurance/api/contract-types', {
+export function getCaseTypes() {
+  return fetch('/court/api/case-types', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
@@ -38,13 +36,13 @@ export function getContractTypes() {
   });
 }
 
-export function createContractType(contractType) {
-  return fetch('/insurance/api/create-contract-type', {
+export function createCaseType(caseType) {
+  return fetch('/court/api/create-case-type', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
-    body: JSON.stringify(contractType)
+    body: JSON.stringify(caseType)
   }).then(async res => {
     const response = await res.json();
     if (response.success) {
@@ -55,8 +53,8 @@ export function createContractType(contractType) {
   });
 }
 
-export function setContractTypeActive(uuid, active) {
-  return fetch('/insurance/api/set-contract-type-active', {
+export function setActiveCaseType(uuid, active) {
+  return fetch('/court/api/set-case-type-active', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
@@ -68,7 +66,7 @@ export function setContractTypeActive(uuid, active) {
 }
 
 export function authenticateUser(user) {
-  return fetch('/insurance/api/authenticate-user', {
+  return fetch('/court/api/authenticate-user', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
@@ -84,8 +82,8 @@ export function authenticateUser(user) {
   });
 }
 
-export function getContracts(user) {
-  return fetch('/insurance/api/contracts', {
+export function getCases(user) {
+  return fetch('/court/api/cases', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
@@ -94,19 +92,19 @@ export function getContracts(user) {
   }).then(async res => {
     let result = await res.json();
     if (result.error) {
-      throw new Error("Could not get contracts!");
+      throw new Error("Could not get cases!");
     }
-    return result.contracts;
+    return result.cases;
   });
 }
 
-export function fileClaim(user, contractUuid, claim) {
-  return fetch('/insurance/api/file-claim', {
+export function fileCase(user, caseTypeUuid, caseData) {
+  return fetch('/court/api/file-case', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
-    body: JSON.stringify({ user, contractUuid, claim })
+    body: JSON.stringify({ user, caseTypeUuid, caseData })
   }).then(async res => {
     let result = await res.json();
     if (result.error) {
