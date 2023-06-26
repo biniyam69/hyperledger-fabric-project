@@ -1,41 +1,78 @@
 'use strict';
 
 import config from './config';
-import { wrapError } from './utils';
-import { repairShopClient as client, isReady } from './setup';
+import { wrapError, marshalArgs } from './utils';
+import { prisonClient as client, isReady } from './setup';
 
 import network from './invoke';
 
-import * as util from 'util' // has no default export
+import * as util from 'util';
 
-export async function getRepairOrders() {
+export async function createPrisoner(prisonerId, prisoner) {
   if (!isReady()) {
     return;
   }
   try {
-    const repairOrders = await query('repair_order_ls');
-    return repairOrders;
+    await invoke('createPrisoner', prisonerId, prisoner);
   } catch (e) {
-    throw wrapError(`Error getting repair orders: ${e.message}`, e);
+    throw wrapError(`Error creating prisoner ${e.message}`, e);
   }
 }
 
-export async function completeRepairOrder(uuid) {
+export async function getPrisoner(prisonerId) {
   if (!isReady()) {
     return;
   }
   try {
-    const successResult = await invoke(`repair_order_complete`, { uuid });
-    if (successResult) {
-      throw new Error(successResult);
-    }
+    const prisoner = await query('getPrisoner', prisonerId);
+    return prisoner;
   } catch (e) {
-    throw wrapError(`Error marking repair order as complete: ${e.message}`, e);
+    throw wrapError(`Error getting prisoner ${e.message}`, e);
   }
 }
 
-export function getBlocks(noOfLastBlocks) {
-  return client.getBlocks(noOfLastBlocks);
+export async function updatePrisoner(prisonerId, newPrisoner) {
+  if (!isReady()) {
+    return;
+  }
+  try {
+    await invoke('updatePrisoner', prisonerId, newPrisoner);
+  } catch (e) {
+    throw wrapError(`Error updating prisoner ${e.message}`, e);
+  }
+}
+
+export async function deletePrisoner(prisonerId) {
+  if (!isReady()) {
+    return;
+  }
+  try {
+    await invoke('deletePrisoner', prisonerId);
+  } catch (e) {
+    throw wrapError(`Error deleting prisoner ${e.message}`, e);
+  }
+}
+
+export async function addSentence(prisonerId, sentence) {
+  if (!isReady()) {
+    return;
+  }
+  try {
+    await invoke('addSentence', prisonerId, sentence);
+  } catch (e) {
+    throw wrapError(`Error adding sentence to prisoner ${e.message}`, e);
+  }
+}
+
+export async function releasePrisoner(prisonerId) {
+  if (!isReady()) {
+    return;
+  }
+  try {
+    await invoke('releasePrisoner', prisonerId);
+  } catch (e) {
+    throw wrapError(`Error releasing prisoner ${e.message}`, e);
+  }
 }
 
 export const on = client.on.bind(client);
@@ -44,36 +81,32 @@ export const addListener = client.addListener.bind(client);
 export const prependListener = client.prependListener.bind(client);
 export const removeListener = client.removeListener.bind(client);
 
-//identity to use for submitting transactions to smart contract
-const peerType = 'repairShopApp-admin'
+// Identity to use for submitting transactions to the smart contract
+const peerType = 'prisonApp-admin';
 let isQuery = false;
 
 async function invoke(fcn, ...args) {
-
   isQuery = false;
 
-  console.log(`args in repairPeer invoke: ${util.inspect(...args)}`)
-  console.log(`func in repairPeer invoke: ${util.inspect(fcn)}`)
+  console.log(`Args in prisonPeer invoke: ${util.inspect(args)}`);
+  console.log(`Function in prisonPeer invoke: ${util.inspect(fcn)}`);
 
   if (config.isCloud) {
     await network.invokeCC(isQuery, peerType, fcn, ...args);
   }
 
-  return client.invoke(
-    config.chaincodeId, config.chaincodeVersion, fcn, ...args);
+  return client.invoke(config.chaincodeId, config.chaincodeVersion, fcn, ...args);
 }
 
 async function query(fcn, ...args) {
+  isQuery = true;
 
-  isQuery = true; 
-
-  console.log(`args in repairPeer query: ${util.inspect(...args)}`)
-  console.log(`func in repairPeer query: ${util.inspect(fcn)}`)
+  console.log(`Args in prisonPeer query: ${util.inspect(args)}`);
+  console.log(`Function in prisonPeer query: ${util.inspect(fcn)}`);
 
   if (config.isCloud) {
     await network.invokeCC(isQuery, peerType, fcn, ...args);
   }
 
-  return client.query(
-    config.chaincodeId, config.chaincodeVersion, fcn, ...args);
+  return client.query(config.chaincodeId, config.chaincodeVersion, fcn, ...args);
 }
