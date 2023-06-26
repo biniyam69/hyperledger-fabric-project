@@ -32,8 +32,6 @@ class CriminalRecordContract extends Contract {
   }
 
 
-
-
   async createRecord(ctx, args) {
     const [recordID, firstName, lastName, dateOfBirth, nationality] = args;
 
@@ -141,11 +139,6 @@ class CriminalRecordContract extends Contract {
 
     // Return the search results as JSON
     return JSON.stringify(records);
-  }
-
-  async addClaim(ctx, args) {
-
-
   }
 
   async addOffense(ctx, args) {
