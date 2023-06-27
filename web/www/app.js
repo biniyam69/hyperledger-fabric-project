@@ -4,29 +4,29 @@ import { Server } from 'http';
 import express from 'express';
 import socketIo from 'socket.io';
 import configureExpress from './config/express';
-import shopRouter, { wsConfig as shopWsConfig }
-  from './routers/shop.router';
-import policeRouter, { wsConfig as policeWsConfig }
-  from './routers/police.router';
-import repairShopRouter, { wsConfig as repairShopWsConfig }
-  from './routers/repair-shop.router';
-import insuranceRouter, { wsConfig as insuranceWsConfig }
-  from './routers/insurance.router';
+import prisonRouter, { wsConfig as prisonWsConfig }
+  from './routers/prison.router';
+import lawenforcementRouter, { wsConfig as lawenforcementWsConfig }
+  from './routers/lawenforcement.router';
+import investigationRouter, { wsConfig as investigationWsConfig }
+  from './routers/repair-prison.router';
+import courtRouter, { wsConfig as courtWsConfig }
+  from './routers/court.router';
 
-const INSURANCE_ROOT_URL = '/insurance';
-const POLICE_ROOT_URL = '/police';
-const REPAIR_SHOP_ROOT_URL = '/repair-shop';
-const SHOP_ROOT_URL = '/shop';
+const COURT_ROOT_URL = '/court';
+const PRISON_ROOT_URL = '/lawenforcement';
+const INVESTIGATION_ROOT_URL = '/repair-prison';
+const LAWENFORCEMENT_ROOT_URL = '/prison';
 
 const app = express();
 const httpServer = new Server(app);
 
 // Setup web sockets
 const io = socketIo(httpServer);
-shopWsConfig(io.of(SHOP_ROOT_URL));
-policeWsConfig(io.of(POLICE_ROOT_URL));
-repairShopWsConfig(io.of(REPAIR_SHOP_ROOT_URL));
-insuranceWsConfig(io.of(INSURANCE_ROOT_URL));
+prisonWsConfig(io.of(PRISON_ROOT_URL));
+lawenforcementWsConfig(io.of(LAWENFORCEMENT_ROOT_URL));
+investigationWsConfig(io.of(INVESTIGATION_ROOT_URL));
+courtWsConfig(io.of(COURT_ROOT_URL));
 
 configureExpress(app);
 
@@ -35,9 +35,9 @@ app.get('/', (req, res) => {
 });
 
 // Setup routing
-app.use(SHOP_ROOT_URL, shopRouter);
-app.use(POLICE_ROOT_URL, policeRouter);
-app.use(REPAIR_SHOP_ROOT_URL, repairShopRouter);
-app.use(INSURANCE_ROOT_URL, insuranceRouter);
+app.use(PRISON_ROOT_URL, prisonRouter);
+app.use(lawenforcement_ROOT_URL, lawenforcementRouter);
+app.use(REPAIR_prison_ROOT_URL, investigationRouter);
+app.use(COURT_ROOT_URL, courtRouter);
 
 export default httpServer;
