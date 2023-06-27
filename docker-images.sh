@@ -61,8 +61,8 @@ if [ $BUILD ]; then
   docker build -t court-peer:latest courtPeer/
   docker build -t investigation-peer:latest investigationPeer/
   docker build -t web:latest web/
-  docker build -t law-enforcement-ca:latest lawEnforcementCA/
-  docker build -t prison-ca:latest prisonCA/
-  docker build -t court-ca:latest courtCA/
-  docker build -t investigation-ca:latest investigationCA/
+  docker build -t law-enforcement-ca:latest LawEnforcementCA/
+  docker build -t prison-ca:latest PrisonCA/
+  docker build -t court-ca:latest CourtCA/
+  docker build -t investigation-ca:latest InvestigationCA/
 fi
