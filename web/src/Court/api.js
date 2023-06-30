@@ -1,115 +1,77 @@
 import fetch from 'isomorphic-fetch';
 
-export function getClaims(status) {
-  return fetch('/court/api/claims', {
-    method: 'POST',
-    headers: new Headers({
-      'Content-Type': 'application/json'
-    }),
-    body: JSON.stringify({ status })
-  }).then(async res => {
-    const claims = await res.json();
-    return claims;
-  });
-}
-
-export function processClaim(caseNumber, caseDetails) {
-  return fetch('/court/api/process-claim', {
+export function createCase(caseNumber, caseDetails) {
+  return fetch('/api/case', {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
     body: JSON.stringify({ caseNumber, caseDetails })
-  }).then(async res => {
-    return await res.json();
-  });
+  }).then(res => res.json());
 }
 
-export function getCaseTypes() {
-  return fetch('/court/api/case-types', {
-    method: 'POST',
+export function getCase(caseNumber) {
+  return fetch(`/api/case/${caseNumber}`, {
+    method: 'GET',
     headers: new Headers({
       'Content-Type': 'application/json'
     })
-  }).then(async res => {
-    return await res.json();
-  });
+  }).then(res => res.json());
 }
 
-export function createCaseType(caseType) {
-  return fetch('/court/api/create-case-type', {
+export function updateCaseStatus(caseNumber, newStatus) {
+  return fetch(`/api/case/${caseNumber}/status`, {
+    method: 'PUT',
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+    body: JSON.stringify({ newStatus })
+  }).then(res => res.json());
+}
+
+export function addPartyToCase(caseNumber, partyName) {
+  return fetch(`/api/case/${caseNumber}/party`, {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
-    body: JSON.stringify(caseType)
-  }).then(async res => {
-    const response = await res.json();
-    if (response.success) {
-      return response.uuid;
-    } else {
-      throw new Error(response.error);
-    }
-  });
+    body: JSON.stringify({ partyName })
+  }).then(res => res.json());
 }
 
-export function setActiveCaseType(uuid, active) {
-  return fetch('/court/api/set-case-type-active', {
+export function scheduleHearing(caseNumber, hearingDate, hearingLocation) {
+  return fetch(`/api/case/${caseNumber}/hearing`, {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json'
     }),
-    body: JSON.stringify({ uuid, active })
-  }).then(async res => {
-    return await res.json();
-  });
+    body: JSON.stringify({ hearingDate, hearingLocation })
+  }).then(res => res.json());
 }
 
-export function authenticateUser(user) {
-  return fetch('/court/api/authenticate-user', {
-    method: 'POST',
+export function getCaseParties(caseNumber) {
+  return fetch(`/api/case/${caseNumber}/parties`, {
+    method: 'GET',
     headers: new Headers({
       'Content-Type': 'application/json'
-    }),
-    body: JSON.stringify({ user })
-  }).then(async res => {
-    let result = await res.json();
-    if (result.error) {
-      throw new Error("Invalid login!");
-    } else {
-      return result.success;
-    }
-  });
+    })
+  }).then(res => res.json());
 }
 
-export function getCases(user) {
-  return fetch('/court/api/cases', {
-    method: 'POST',
+export function getCaseHearings(caseNumber) {
+  return fetch(`/api/case/${caseNumber}/hearings`, {
+    method: 'GET',
     headers: new Headers({
       'Content-Type': 'application/json'
-    }),
-    body: JSON.stringify({ user })
-  }).then(async res => {
-    let result = await res.json();
-    if (result.error) {
-      throw new Error("Could not get cases!");
-    }
-    return result.cases;
-  });
+    })
+  }).then(res => res.json());
 }
 
-export function fileCase(user, caseTypeUuid, caseData) {
-  return fetch('/court/api/file-case', {
-    method: 'POST',
+export function getAllCases() {
+  return fetch('/api/cases', {
+    method: 'GET',
     headers: new Headers({
       'Content-Type': 'application/json'
-    }),
-    body: JSON.stringify({ user, caseTypeUuid, caseData })
-  }).then(async res => {
-    let result = await res.json();
-    if (result.error) {
-      throw new Error("Error occurred!");
-    }
-    return;
-  });
+    })
+  }).then(res => res.json());
 }
