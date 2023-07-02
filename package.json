@@ -9,7 +9,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fabric-gateway": "^1.3.0-dev.20211029.6",
+    "@hyperledger/fabric-gateway": "^1.3.0",
     "fabric-shim": "^2.5.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biniyam69/hyperledger-fabric-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/biniyam69/hyperledger-fabric-project/issues"
+  },
+  "homepage": "https://github.com/biniyam69/hyperledger-fabric-project#readme"
 }

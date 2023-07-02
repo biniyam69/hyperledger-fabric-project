@@ -1,0 +1,77 @@
+[
+  {
+    "name": "Usman Jamal Ahmed",
+    "status": "Completed",
+    "offense": "Bank Robbery",
+    "conviction": "Robbery",
+    "date": "4 Nov 2022",
+    "place": "Harari"
+  },
+  {
+    "name": "Rahel Adahanu Tilahun",
+    "status": "Canceled",
+    "offense": "Bank Robbery",
+    "conviction": "Robbery",
+    "date": "7 Apr 2023",
+    "place": "Tigray"
+  },
+  {
+    "name": "Etefu Biruh",
+    "status": "Pending",
+    "offense": "Black mailed Coworker",
+    "conviction": "Sexual Assault",
+    "date": "12 Mar 2023",
+    "place": "Harari"
+  },
+
+  {
+    "name": "Wintana Habte Ali",
+    "status": "Completed",
+    "offense": "Bank Robbery",
+    "conviction": "Robbery",
+    "date": "23 Sept 2022",
+    "place": "SNNP"
+  },
+  {
+    "name": "Biniyam Moges Amare",
+    "status": "Completed",
+    "offense": "Bank Robbery",
+    "conviction": "Robbery",
+    "date": "18 Apr 2022",
+    "place": "Dire Dawa"
+  },
+  {
+    "name": "Bereket Wendneh Aklilu",
+    "status": "Pending",
+    "offense": "Bank Robbery",
+    "conviction": "Robbery",
+    "date": "20 May 2021",
+    "place": "Addis Ababa"
+  },
+
+  {
+    "name": "Sirak Yeneneh Bereket",
+    "status": "Canceled",
+    "offense": "Bank Robbery",
+    "conviction": "Robbery",
+    "date": "12 Jul 2023",
+    "place": "Amhara"
+  },
+
+  {
+    "name": "Yank Ujulu Koat",
+    "status": "Pending",
+    "offense": "First Degree Murder",
+    "conviction": "Homicide",
+    "date": "3 Aug 2022",
+    "place": "Gambela"
+  },
+  {
+    "name": "Gemechu Olana Gelana",
+    "status": "Completed",
+    "offense": "Shoplifting",
+    "conviction": "Robbery",
+    "date": "18 Jan 2023",
+    "place": "Oromia"
+  }
+]

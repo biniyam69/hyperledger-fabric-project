@@ -8,7 +8,7 @@ import network from './invoke';
 
 import * as util from 'util'; // has no default export
 
-export async function registerCriminalRecord(recordID, firstName, lastName, dateOfBirth, nationality) {
+export async function registerCriminalRecord(recordID, firstName, lastName, dateOfBirth, nationality, acquittals, offences, offenseDate, region, city ,subcity) {
   if (!isReady()) {
     return;
   }
