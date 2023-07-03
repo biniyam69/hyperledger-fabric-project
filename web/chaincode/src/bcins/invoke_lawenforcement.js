@@ -7,6 +7,7 @@ class CriminalRecord {
     this.firstName = firstName;
     this.lastName = lastName;
     this.dateOfBirth = dateOfBirth;
+    this.gender = gender;
     this.nationality = nationality;
     this.offences = [];
     this.convictions = [];
@@ -15,6 +16,7 @@ class CriminalRecord {
     this.region = region;
     this.city = city;
     this.subcity = subcity;
+    this.matrialstatus = matrialstatus;
 
   }
 }
@@ -22,10 +24,12 @@ class CriminalRecord {
 class LawEnforcementContract extends Contract {
   
   async registerCriminalRecord(ctx, recordID, firstName, lastName, 
+    gender, 
     dateOfBirth, nationality, 
     matrialstatus, offences, conviction, 
     offenseDate, acquittals, region, city, subcity) {
-    const record = new CriminalRecord(recordID, firstName, lastName, dateOfBirth, nationality);
+    const record = new CriminalRecord(recordID, firstName, lastName, dateOfBirth, nationality, gender, matrialstatus, offences, conviction, offenseDate,
+      acquittals, region, city, subcity );
     await ctx.stub.putState(recordID, Buffer.from(JSON.stringify(record)));
   }
 

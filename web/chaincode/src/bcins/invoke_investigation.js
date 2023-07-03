@@ -3,6 +3,7 @@
 const { Contract } = require('fabric-contract-api');
 
 class InvestigatorContract extends Contract {
+  
   async createInvestigation(ctx, id, caseNumber, description) {
     const investigationExists = await this.investigationExists(ctx, id);
     if (investigationExists) {
